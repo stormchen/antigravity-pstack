@@ -10,16 +10,16 @@
 
 ```mermaid
 flowchart TD
-    A[你的 Prompt] --> B[poteto-mode 核心調度]
-    B --> C[閱讀工程守則與邊界約束]
-    C --> D{識別任務模式}
-    D -->|唯讀調查/流程追蹤| E[調查劇本 (Investigation)]
-    D -->|錯誤/缺陷| F[缺陷修復劇本 (Bug fix)]
-    D -->|新功能/行為擴充| G[功能劇本 (Feature)]
-    D -->|僅結構調整無行為改變| H[重構劇本 (Refactoring)]
-    D -->|效能延遲修復| I[效能修復劇本 (Perf issue)]
-    D -->|大型遷移或無明確單一匹配| J[自主探索劇本 (figure-it-out)]
-    E --> K[實機驗證並產出客觀證據]
+    A["你的 Prompt"] --> B["poteto-mode 核心調度"]
+    B --> C["閱讀工程守則與邊界約束"]
+    C --> D{"識別任務模式"}
+    D -->|唯讀調查/流程追蹤| E["調查劇本 (Investigation)"]
+    D -->|錯誤/缺陷| F["缺陷修復劇本 (Bug fix)"]
+    D -->|新功能/行為擴充| G["功能劇本 (Feature)"]
+    D -->|僅結構調整無行為改變| H["重構劇本 (Refactoring)"]
+    D -->|效能延遲修復| I["效能修復劇本 (Perf issue)"]
+    D -->|大型遷移或無明確單一匹配| J["自主探索劇本 (figure-it-out)"]
+    E --> K["實機驗證並產出客觀證據"]
     F --> K
     G --> K
     H --> K
