@@ -8,6 +8,17 @@
 
 ## 1. 高頻實用 Prompt 範本
 
+### 動手前打磨深度與對齊目標
+```text
+/sharpen 幫我重構這套通知發送模組並確保不會漏發。
+```
+[`sharpen`](../../.agents/skills/sharpen/SKILL.md) 會先指出領域頂尖專家會多考慮哪些關鍵點、從哪個第一手素材開始、用什麼工具與客觀驗證信號，並把你的提示詞重寫為深度版本。
+
+```text
+/in-your-own-words
+```
+在開始複雜改動前，讓 [`in-your-own-words`](../../.agents/skills/in-your-own-words/SKILL.md) 先用 Agent 自己的話複述你的核心目標與底層問題，第一時間攔截認知偏差。
+
 ### 理解陌生的複雜模組
 ```text
 先用 /how 梳理這套初始化機制的運行流程，再用 /why 調查它近期被修改破壞的原因。
@@ -38,11 +49,21 @@
 ```
 明確指出「若有低成本路徑」，給予 Agent 彈性，避免為脆弱的外部依賴編寫龐大虛假的 Mock。
 
-### 隔夜無人值守自主運作
+### 隔夜無人值守與歸來快速同步
 ```text
 我要去休息了。使用 /goal 持續自主推進，直到所有 fixtures 測試全綠。記錄 decisions.tsv 供早晨審核。
 ```
-設定客觀可衡量的終止狀態，讓 Agent 具備自主循環的明確錨點。
+當你回來時，直接輸入：
+```text
+/ketchup
+```
+[`ketchup`](../../.agents/skills/ketchup/SKILL.md) 會在 150 字內搭配截圖與圖表幫你抓出進展重點，並完整列出正等待你拍板的決策事項與建議選項。
+
+### 根除重複發生的 Agent 錯誤
+```text
+/correct
+```
+[`correct`](../../.agents/skills/correct/SKILL.md) 會找出 Agent 反覆犯下的錯誤類別，優先透過架構、強型別或 Linter 從結構上封死錯誤路徑。
 
 ### 單行即時原則糾偏
 ```text
@@ -50,6 +71,9 @@
 ```
 ```text
 遵守 Prove It Works 原則。給我看真實終端輸出，而不是 build 通過的 log。
+```
+```text
+套用 Attack the Premise。這已經是第二次修同一個地方失敗了，先寫下並測試你的前提假設。
 ```
 ```text
 /unslop 整理剛才的 PR 說明，去除陳腔濫調。

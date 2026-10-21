@@ -27,7 +27,8 @@ Main Agent 呼叫 `invoke_subagent` 工具，派發給 `code-architect` Subagent
 - 提示詞使用 `references/runner-prompt.md`。
 - 每個候選設計產生符合 `references/rationale-template.md` 規範的設計包：優先撰寫呼叫方使用範例，接著導出型別草圖、函式簽名、模組拓撲圖與設計理由。
 - 遵循 **exhaust-the-design-space** 原則，要求提供至少兩種不同結構的可能路徑進行比較。
-- 對照 `references/design-red-flags.md` 排除淺層模組、資訊洩漏、時間解耦不良與穿透式方法。
+- 對照 `references/design-red-flags.md` 排除淺層模組、資訊洩漏、時間解耦不良、穿透式方法、所有權分裂、同一任務多種做法、內部細節可被外部匯入與手動同步清單。
+- **防禦後續 Agent 犯錯**：假設下一位維護者是只看當前開啟檔案、直接複製最近範例、並走最短編譯通過路徑的 AI Agent。優先選擇「從單一檔案看起來正確的寫法，在整個儲存庫中也必然正確」的架構設計。
 - 偏好「深層介面 (Deep Interface)」：以最小且乾淨的公開介面隱藏內部複雜度。
 
 可視需要調用 `code-adversary` Subagent 對架構草圖進行對抗性審查（`interrogate`），在寫代碼前預先找出架構死角與競態風險。

@@ -1,11 +1,11 @@
 # pstack for Antigravity
 
 > **追求深度而非虛浮產能，以真機驗證驅動工程品質。**  
-> 本專案已完全移植並重構為 **Google DeepMind Antigravity 原生架構**，支援跨平台（Windows / macOS / Linux）開箱即用。
+> 本專案已完全移植並重構為 **Google DeepMind Antigravity 原生架構**，支援跨平台（Windows / macOS / Linux）開箱即用，並同步整合 upstream 最新 v0.15.28 改進成果。
 
 ---
 
-這一個專案移植由lauren(Poteto) from SpaceXAI 在Cursor 完成的plugin,因為原本Pstack架構非常依賴Cursor,所以將其精煉到Google Antigravity內方便使用.如果對原版Lauren的Pstack有興趣請到Cursor Github找尋.
+這一個專案移植由 lauren(Poteto) from SpaceXAI 在 Cursor 完成的 plugin，因為原本 Pstack 架構非常依賴 Cursor，所以將其精煉到 Google Antigravity 內方便使用。如果對原版 Lauren 的 Pstack 有興趣請到 Cursor Github 找尋。
 https://x.com/cursor_ai
 https://x.com/SpaceXAI
 https://x.com/poteto
@@ -20,7 +20,7 @@ https://x.com/poteto
 pstack 的核心理念：
 1. **少即是多**：目標不是最大化代碼行數，而是用最少的抽象、最小的改動解決問題，甚至主動刪除死代碼。
 2. **無畏的平行化（Fearless Parallelism）**：當你能夠信任單一 Agent 會深入追查根因並嚴格在真實環境驗證成果時，你才能真正放心地平行派發多個 Subagent 協同攻堅。
-3. **原生與多模型協同**：結合 Antigravity 的原生子代理體系，架構設計、紅隊挑刺、程式實作、註解除噪各司其職。
+3. **原生與多模型協同**：結合 Antigravity 的原生子代理體系，架構設計、紅隊挑刺、程式實作、形式驗證、註解除噪各司其職。
 
 ---
 
@@ -33,9 +33,9 @@ pstack 的核心理念：
 ```text
 專案根目錄/
 ├── .agents/
-│   ├── skills/                  # 22 個核心工作流技能
+│   ├── skills/                  # 29 個核心工作流技能
 │   ├── agents/                  # 自訂 Subagents（code-adversary, code-architect）
-│   └── rules/                   # 核心工程守則（engineering-principles.md）
+│   └── rules/                   # 24 項核心工程守則（engineering-principles.md）
 ├── docs/guide/                  # 完整繁體中文實戰指南（含圖解）
 ├── AGENTS.md                    # 專案代理規範入口（自動載入）
 └── README.md
@@ -60,7 +60,7 @@ pstack 的核心理念：
 
 ## 核心工作流：`/poteto-mode`
 
-[`poteto-mode`](./.agents/skills/poteto-mode/SKILL.md) 是整個體系的調度大腦。它會讀取你的需求，自動從 22 套 Playbooks（劇本）中匹配最適方案，並在執行清單中按部就班調用具體技能。
+[`poteto-mode`](./.agents/skills/poteto-mode/SKILL.md) 是整個體系的調度大腦。它會讀取你的需求，自動從 23 套 Playbooks（劇本）中匹配最適方案，並在執行清單中按部就班調用具體技能。
 
 ```text
 /poteto-mode 這個 PR 有一個細微缺陷：即使閒置時，畫面滾動每 750ms 都會出現漂移。先重現問題，然後修復並驗證。
@@ -70,7 +70,7 @@ pstack 的核心理念：
 /poteto-mode 我要去休息了。使用 /goal 持續推進，直到遷移檢查完全通過。記錄 decisions.tsv 供早晨審查。
 ```
 
-### 內建 22 套 Playbooks 劇本一覽
+### 內建 23 套 Playbooks 劇本一覽
 
 <details>
 <summary>點擊展開完整劇本清單與用途</summary>
@@ -79,7 +79,7 @@ pstack 的核心理念：
 |---|---|
 | [唯讀調查 (Investigation)](./.agents/skills/poteto-mode/playbooks/investigation.md) | 純粹理解與探索。X 如何運作？當初為何這樣設計？確認邏輯邊界。 |
 | [缺陷修復 (Bug fix)](./.agents/skills/poteto-mode/playbooks/bug-fix.md) | 重現缺陷、定位根因，並以真實執行環境數據證明修復。 |
-| [效能修復 (Perf issue)](./.agents/skills/poteto-mode/playbooks/perf-issue.md) | 針對實測慢速進行 Profiling，修復瓶頸並比對前後數據。 |
+| [效能修復 (Perf issue)](./.agents/skills/poteto-mode/playbooks/perf-issue.md) | 針對實測慢速進行 Profiling，套用 7 大效能口訣與基準清單比對前後數據。 |
 | [指標爬坡 (Hillclimb)](./.agents/skills/poteto-mode/playbooks/hillclimb.md) | 科學化指標調優：凍結測試 Harness，循環嘗試單一假說，每次進步獨立提交。 |
 | [運行期鑑識 (Runtime forensics)](./.agents/skills/poteto-mode/playbooks/runtime-forensics.md) | 診斷線上或本機即時症狀（記憶體洩漏、CPU 飆高、畫面閃爍）。 |
 | [追蹤檔案鑑識 (Trace forensics)](./.agents/skills/poteto-mode/playbooks/trace-forensics.md) | 分析 Profiling 產物（cpuprofile、trace、heap snapshot 等）。 |
@@ -89,11 +89,12 @@ pstack 的核心理念：
 | [視覺對齊 (Visual parity)](./.agents/skills/poteto-mode/playbooks/visual-parity.md) | 兩個介面實現之間追求像素級（Pixel-exact）的視覺一致性。 |
 | [技能開發 (Authoring a skill)](./.agents/skills/poteto-mode/playbooks/authoring-a-skill.md) | 遵循高標準規範編寫或修改專案 `SKILL.md`。 |
 | [技能評估 (Eval)](./.agents/skills/poteto-mode/playbooks/eval.md) | 以雙盲測試檢驗提示詞或技能修改對 Agent 行為的影響。 |
+| [開啟 PR (Opening a PR)](./.agents/skills/poteto-mode/playbooks/opening-a-pr.md) | 將工作整理為乾淨的小提交，撰寫一分鐘簡報式 PR 描述並附上驗證證據。 |
 | [PR 監護 (Babysit)](./.agents/skills/poteto-mode/playbooks/babysit.md) | 推進 PR 至 Merge-ready：批次解衝突、澄清與修復 Review 意見、跑通 CI。 |
 | [堆疊交付 (Shipping)](./.agents/skills/poteto-mode/playbooks/shipping.md) | 獨立驗證綠燈堆疊，自底向上逐步合併至主幹。 |
 | [自主運行 (Autonomous run)](./.agents/skills/poteto-mode/playbooks/autonomous-run.md) | 離席長時運作，具備明確完成條件與逃生脫退機制。 |
 | [大型編排 (Orchestrate)](./.agents/skills/poteto-mode/playbooks/orchestrate.md) | 跨日、多層次的大型專案編排，調度子代理艦隊協同。 |
-| [全自主飛行 (Autopilot-full)](./.agents/skills/poteto-mode/playbooks/autopilot-full.md) | 自主推進獨立 PR 佇列至合併，嚴格由獨立驗證 Agent 簽核。 |
+| [全自主飛行 (Autopilot-full)](./.agents/skills/poteto-mode/playbooks/autopilot-full.md) | 自主推進獨立 PR 佇列至合併，嚴格由獨立驗證 Agent 簽核並以 `/ketchup` 同步。 |
 | [堆疊飛行 (Autopilot-stack)](./.agents/skills/poteto-mode/playbooks/autopilot-stack.md) | 推進多項變更並整理為線性堆疊，留待早晨人工審閱後合併。 |
 | [會話接續 (Session pickup)](./.agents/skills/poteto-mode/playbooks/session-pickup.md) | 接手先前 Agent 留下的工作，依循決策日誌繼續，不重做已完成事項。 |
 | [安全暫停 (Pause safely)](./.agents/skills/poteto-mode/playbooks/pause-safely.md) | 妥善封存目前狀態與復工點，便於日後無縫復原。 |
@@ -106,32 +107,39 @@ pstack 的核心理念：
 
 ## 核心技能庫 (Skills)
 
-本專案經過深度審查與清理，去除了無效與平台綁定模組，保留並最佳化了 22 個核心技能：
+本專案經過深度審查與清理，去除了無效與平台綁定模組，保留並最佳化了 **29 個核心技能**：
 
 | 技能名稱 | 核心職責 | 調用範例 |
 |---|---|---|
 | [`poteto-mode`](./.agents/skills/poteto-mode/SKILL.md) | 核心總調度大腦，自動匹配劇本並編排執行 | `/poteto-mode <目標與驗證標準>` |
+| [`sharpen`](./.agents/skills/sharpen/SKILL.md) | 需求深度打磨：從專家視角、第一手素材與客觀檢驗條件重寫提示詞 | `/sharpen <原始提示詞>` |
+| [`in-your-own-words`](./.agents/skills/in-your-own-words/SKILL.md) | 在動手前以 Agent 自己的話複述核心目標與底層問題，確保共識對齊 | `/in-your-own-words` |
+| [`ketchup`](./.agents/skills/ketchup/SKILL.md) | 離席進度與決策同步看板：以白話、視覺圖表與待決策清單快速同步進展 | `/ketchup` |
+| [`correct`](./.agents/skills/correct/SKILL.md) | 結構化糾偏：依序從架構、型別、Linter 到測試，根除重複犯下的錯誤 | `/correct` |
 | [`how`](./.agents/skills/how/SKILL.md) | 深入梳理現有代碼執行期流程與關鍵型別，支援架構批判 | `/how 這套快取機制如何運作？` |
 | [`why`](./.agents/skills/why/SKILL.md) | 像偵探一樣挖掘 Git 歷史與 Issue，探尋架構背後的原因 | `/why 當初為何設定 5 秒超時？` |
 | [`teach`](./.agents/skills/teach/SKILL.md) | 結合 how 與 why，以圖表與直白論點說服你變更的合理性 | `/teach 說服我此 PR 修復了根因` |
 | [`recall`](./.agents/skills/recall/SKILL.md) | 快速整理近期對話進度、變更脈絡與待辦事項 | `/recall 整理上週關於 parser 的進展` |
-| [`architect`](./.agents/skills/architect/SKILL.md) | 調度架構師子代理設計型別與邊界契約，防範過早寫碼 | `/architect 在動手前先設計匯入介面` |
+| [`architect`](./.agents/skills/architect/SKILL.md) | 調度架構師子代理設計型別與邊界契約，防範過早寫碼與後續 Agent 誤用 | `/architect 在動手前先設計匯入介面` |
 | [`arena`](./.agents/skills/arena/SKILL.md) | 多方案平行競技場，多個 Agent 獨立實現並交叉打分嫁接 | `/arena 對這段資料結構設計進行競技` |
 | [`swarm`](./.agents/skills/swarm/SKILL.md) | 大規模平行派發矩陣工作者，適用於套件覆蓋或賽馬測試 | `/swarm 獨立檢查 packages/ 下所有套件` |
 | [`interrogate`](./.agents/skills/interrogate/SKILL.md) | 調度紅隊審查員對變更進行嚴苛挑刺，區分有效漏洞與噪音 | `/interrogate 審查分支，尋找邊界漏洞` |
 | [`tdd`](./.agents/skills/tdd/SKILL.md) | 測試驅動開發：編寫最小失敗測試 -> 修復 -> 重新跑通 | `/tdd implement` |
 | [`blast-radius`](./.agents/skills/blast-radius/SKILL.md) | 評估小改動的潛在爆炸半徑，並用真實代碼證明安全 | `/blast-radius 評估此改動的連帶影響` |
-| [`unslop`](./.agents/skills/unslop/SKILL.md) | 去除 PR 描述、Commit 與文件中的 AI 贅字與空話 | `/unslop 整理這次的更新說明` |
+| [`benchmark-checklist`](./.agents/skills/benchmark-checklist/SKILL.md) | 效能基準測試 7 大檢驗清單：驗證限制因子、調優對等性與可重現性 | `/benchmark-checklist` |
+| [`create-verification-skill`](./.agents/skills/create-verification-skill/SKILL.md) | 為專案自動探勘並建立專屬的端到端實機驗證技能與功能地圖 | `/create-verification-skill` |
+| [`maintain-verification-skill`](./.agents/skills/maintain-verification-skill/SKILL.md) | 定期審查功能地圖漂移，回報應用回歸缺陷並修復驗證腳本 | `/maintain-verification-skill` |
+| [`create-formal-verification-skill`](./.agents/skills/create-formal-verification-skill/SKILL.md) | 針對並發競態、重試與狀態機，生成 TLA+ / SMT / 屬性形式驗證技能 | `/create-formal-verification-skill` |
+| [`maintain-formal-verification-skill`](./.agents/skills/maintain-formal-verification-skill/SKILL.md) | 將形式驗證模型與最新代碼重新對齊，區分模型漂移與真實代碼 Bug | `/maintain-formal-verification-skill` |
+| [`unslop`](./.agents/skills/unslop/SKILL.md) | 去除 PR 描述、Commit 與文件中的 AI 贅字、矯揉文風與過度壓縮 | `/unslop 整理這次的更新說明` |
 | [`no-comments`](./.agents/skills/no-comments/SKILL.md) | 派發獨立視角清除代碼中的多餘廢話註解，轉化為型別約束 | `/no-comments 淨化此 diff 的註解` |
 | [`technical-writing`](./.agents/skills/technical-writing/SKILL.md) | 遵循 Diátaxis 架構與 Google 開發者規範的嚴格技術寫作 | `/technical-writing 審查設計文件` |
-| [`create-verification-skill`](./.agents/skills/create-verification-skill/SKILL.md) | 為專案自動探勘並建立專屬的端到端實機驗證技能與地圖 | `/create-verification-skill` |
-| [`maintain-verification-skill`](./.agents/skills/maintain-verification-skill/SKILL.md) | 定期審查功能地圖漂移，回報應用回歸缺陷並修復驗證腳本 | `/maintain-verification-skill` |
 | [`show-me-your-work`](./.agents/skills/show-me-your-work/SKILL.md) | 記錄可被審計的決策軌跡（`decisions.tsv`），支援隔日審查 | `/show-me-your-work 匯報昨晚決策` |
 | [`figure-it-out`](./.agents/skills/figure-it-out/SKILL.md) | 無單一對應時的通用探索劇本，規劃執行階段與假說循環 | `/figure-it-out 解決大型遷移` |
 | [`automate-me`](./.agents/skills/automate-me/SKILL.md) | 挖掘你的歷史對話習慣，為你客製專屬的個人工作流模式 | `/automate-me` |
 | [`reflect`](./.agents/skills/reflect/SKILL.md) | 會話復盤：分析踩坑經歷並提煉為持久的工程資產與規範 | `/reflect 提煉這次任務的教訓` |
 | [`bro`](./.agents/skills/bro/SKILL.md) | 將充滿生硬術語的回覆翻譯為白話大白話 | `/bro` |
-| [`typescript-best-practices`](./.agents/skills/typescript-best-practices/SKILL.md) | 碰觸 TS/TSX 檔案時自動載入，規範邊界解析與辨識聯集 | 自動啟動，無須手動輸入 |
+| [`typescript-best-practices`](./.agents/skills/typescript-best-practices/SKILL.md) | 碰觸 TS/TSX 檔案時載入，規範邊界解析、Type Guard Brand 與辨識聯集 | 自動啟動或按需調用 |
 
 ---
 
@@ -151,12 +159,14 @@ pstack 的核心理念：
 
 ## 核心工程原則 (Principles)
 
-本專案已將原本分散的 21 個原則目錄淬煉為單一權威規範：[`.agents/rules/engineering-principles.md`](./.agents/rules/engineering-principles.md)，並在根目錄 [`AGENTS.md`](./AGENTS.md) 聲明。
+本專案已將完整的 **24 項工程原則**淬煉為單一權威規範：[`.agents/rules/engineering-principles.md`](./.agents/rules/engineering-principles.md)，並在根目錄 [`AGENTS.md`](./AGENTS.md) 聲明常駐。
 
 每次對話中，你可以隨時以原則名稱直接向 Agent 下達糾偏指令：
 - `落實 Subtract Before You Add。先刪除無用代碼再設計新邊界。`
 - `遵守 Prove It Works。給我看真實執行產物，不要拿編譯通過充數。`
-- `套用 Separate Before Serializing Shared State。以獨立 Worktree 消除共享。`
+- `套用 Attack the Premise。這已經是第二次修同一個地方失敗了，先寫下並測試你的前提假設。`
+- `套用 Explain the Number。報告這個加速比之前，先找出目前的限制因子。`
+- `遵守 Test Behavior, Not Implementation。只斷言外部可觀察行為，不要綁死內部私有 helper。`
 
 ---
 

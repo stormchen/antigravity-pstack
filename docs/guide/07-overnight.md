@@ -1,6 +1,6 @@
-# 夜間自主運行與決策審計
+# 夜間自主運行、進度同步與決策審計
 
-這是整個工程體系的高價值回報。一個值得信賴、能夠自行驗證代碼的 Agent，是你敢於放手讓它在夜間自主攻堅困難任務的前提。保證自主運行安全的不是祈禱，而是**客觀可驗證的完成條件**、**完全隔離的獨立分支**，以及**早晨一目了然的決策審計日誌**。
+這是整個工程體系的高價值回報。一個值得信賴、能夠自行驗證代碼的 Agent，是你敢於放手讓它在夜間自主攻堅困難任務的前提。保證自主運行安全的不是祈禱，而是**客觀可驗證的完成條件**、**完全隔離的獨立分支**，以及**早晨一目了然的決策看板與審計日誌**。
 
 ![深夜工廠中機器人保持運作，其中一個機器人在決策日誌看板上更新進度，上方懸掛構建循環進行中的燈牌。](./images/overnight.jpg)
 
@@ -45,24 +45,40 @@ flowchart TD
 
 ---
 
-## 3. 早晨決策審計：`/show-me-your-work`
+## 3. 離席歸來快速同步：`/ketchup` 與 `/show-me-your-work`
 
-讓整晚工作可供人類審查的關鍵是 [`show-me-your-work`](../../.agents/skills/show-me-your-work/SKILL.md)。在 Windows 與各平台環境下，它會將每一次決策點、動機、證據檔案與執行結果記錄於 `decisions.tsv`（由 `log.mjs` / `log.ps1` 跨平台支援）。
+當你從會議回來或早晨打開電腦，面對長任務與多個背景 Subagent 的產出時，你有兩套互補工具：
 
-當你早晨回到電腦前時，只需輸入：
+### A. 視覺化決策看板：`/ketchup`
+
+當你想在 1 分鐘內掌握「自上次發言以來變了什麼」以及「現在有哪些事正等我拍板」時，直接輸入：
+
+```text
+/ketchup
+```
+
+[`ketchup`](../../.agents/skills/ketchup/SKILL.md)（諧音 Catch-up）會：
+- 以大白話（100 字內）結合**視覺圖表（截圖、錄影、Mermaid 架構圖）**呈現對使用者有實質意義的進展。
+- **完整列出所有待決策事項（Action Items）**：每項附上影響、風險、證據以及 **Agent 的建議選項（Your Pick）**，讓你在回覆中一眼就能直接拍板定案。
+
+### B. 深度決策軌跡審計：`/show-me-your-work`
+
+讓整晚工作可供深度審計的關鍵是 [`show-me-your-work`](../../.agents/skills/show-me-your-work/SKILL.md)。在 Windows 與各平台環境下，它會將每一次決策點、動機、證據檔案與執行結果記錄於 `decisions.tsv`（由 `log.mjs` / `log.ps1` 跨平台支援）。
+
+當你需要審查底層決策品質時，輸入：
 
 ```text
 /show-me-your-work 總結昨晚完成的進度與決策
 ```
 
-系統會派發獨立的審查子代理通讀整晚軌跡，並在回報末尾提供 **Attention（重點關注）** 區塊，標出最具爭議或轉折的決策行。你不需要通讀數百條原始記錄，只需針對關鍵決策進行抽查審計。
+系統會派發獨立的審查子代理通讀整晚軌跡，並在回報末尾提供 **Attention（重點關注）** 區塊，標出最具爭議或轉折的決策行。
 
 ---
 
 ## 4. 更大規模的夜間協同：佇列與編排
 
-- **[Autopilot-full 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-full.md)**：自動推進佇列中的獨立 PR 直至合併。每一筆 PR 都有專屬負責 Agent，並由獨立驗證 Agent 審定無誤後才允許合併。
-- **[Autopilot-stack 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-stack.md)**：同樣自動推進各項任務，但維持線性堆疊而不擅自合併，留待你早晨親自確認後一次 Land。
+- **[Autopilot-full 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-full.md)**：自動推進佇列中的獨立 PR 直至合併。每一筆 PR 都有專屬負責 Agent，由獨立驗證 Swarm 簽核後合併，並在每個巡檢週期以 `/ketchup` 向你同步。
+- **[Autopilot-stack 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-stack.md)**：同樣自動推進各項任務，但維持線性堆疊而不擅自合併，留待你早晨透過 `/ketchup` 審閱後一次 Land。
 - **[Orchestrate 劇本](../../.agents/skills/poteto-mode/playbooks/orchestrate.md)**：適用於跨越多天的超大型專案。由不編寫任何代碼的協調主代理統一排定子任務簡報，並調度龐大的 Subagent 艦隊分頭攻堅。
 
 > [!CAUTION]

@@ -11,11 +11,11 @@
 3. [變更前深入理解代碼](./03-understand.md)：在動手改動前，善用 `/how`、`/why`、`/teach` 與 `/recall`。
 4. [架構設計與多方案競爭](./04-design.md)：在代碼定型前，調用 `/architect`、`/arena`、`/swarm` 與 `/interrogate`。
 5. [構建與代碼淨化](./05-build-and-clean.md)：建構劇本、`/tdd` 測試先行、`/unslop` 去除 AI 贅詞與 `/no-comments` 代碼除噪。
-6. [實機驗證與交付流程](./06-verify-and-ship.md)：在真實應用上驗證行為、產生驗證技能，並推進 PR 至安全合併。
-7. [夜間自主運行與決策審計](./07-overnight.md)：無人值守的隔夜協約、可審計的決策日誌 (`/show-me-your-work`) 與大型任務編排。
-8. [核心工程守則架構](./08-principles.md)：21 項工程原則如何精煉為 Rules，並在任務中即時糾偏。
-9. [自訂你的工作模式](./09-make-it-yours.md)：使用 `/automate-me` 萃取專屬模式、`/reflect` 經驗沉澱與技能盲測。
-10. [常用提示範本與常見避坑](./10-recipes-and-pitfalls.md)：高頻實用 Prompts 與最容易踩中的反模式。
+6. [實機驗證、形式驗證與交付流程](./06-verify-and-ship.md)：在真實應用上驗證行為、建立 TLA+ 形式驗證、檢驗效能基準 (`/benchmark-checklist`)，並推進 PR 至安全合併。
+7. [夜間自主運行、進度同步與決策審計](./07-overnight.md)：無人值守的隔夜協約、離席進度與決策看板 (`/ketchup`)、可審計的決策日誌 (`/show-me-your-work`) 與大型任務編排。
+8. [核心工程守則架構](./08-principles.md)：24 項工程原則如何精煉為 Rules，並在任務中即時糾偏。
+9. [自訂你的工作模式與結構化防呆](./09-make-it-yours.md)：使用 `/automate-me` 萃取專屬模式、`/correct` 根除重複錯誤、`/reflect` 經驗沉澱與技能盲測。
+10. [常用提示範本與常見避坑](./10-recipes-and-pitfalls.md)：含 `/sharpen`、`/in-your-own-words`、`/ketchup` 等高頻實用 Prompts 與最容易踩中的反模式。
 
 建議初次閱讀時依序瀏覽各章節；後續可將各頁面作為獨立查閱的手冊。
 

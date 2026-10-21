@@ -1,6 +1,6 @@
-# 自訂你的工作模式
+# 自訂你的工作模式與結構化防呆
 
-`poteto-mode` 只是其中一種高效協作風格。底層的 Playbook、動態路由與 Subagent 調度機制，完全能夠換上屬於你個人或團隊的風格。本章將介紹如何自動挖掘個人習慣、沉澱會話經驗、開發專屬技能，並進行嚴謹的技能盲測。
+`poteto-mode` 只是其中一種高效協作風格。底層的 Playbook、動態路由與 Subagent 調度機制，完全能夠換上屬於你個人或團隊的風格。本章將介紹如何自動挖掘個人習慣、根除重複錯誤、沉澱會話經驗、開發專屬技能，並進行嚴謹的技能盲測。
 
 ---
 
@@ -22,7 +22,23 @@
 
 ---
 
-## 2. 透過 `/reflect` 沉澱會話經驗
+## 2. 透過 `/correct` 從結構上根除重複錯誤
+
+當你發現自己在此儲存庫中反覆糾正 Agent 犯下同類錯誤時，不要只是在對話中罵它或再加一行沒有約束力的文字叮嚀，直接執行：
+
+```text
+/correct
+```
+
+[`correct`](../../.agents/skills/correct/SKILL.md) 會盤點近期 Commits、Reverts 與規範檔，找出重複發生兩次以上的錯誤類別，並依**由高至低的有效層級**徹底封死錯誤路徑：
+1. **架構消除**：讓狀態只有唯一擁有者、任務只有唯一做法、隱藏內部模組使非法匯入無法編譯。
+2. **型別與 Linter 強制**：用強型別讓非法狀態寫不出來；或新增報錯訊息直接點名正確替代方案的 Linter。
+3. **行為測試**：修正脆弱測試，確保外部行為損壞時必定失敗。
+4. **最後才是文件規則**：並在規範檔中維護「規則 ↔ 自動化執行機制」對照表，確保每一項教訓都有真實機制把關。
+
+---
+
+## 3. 透過 `/reflect` 沉澱會話經驗
 
 在一場花費過多時間或遭遇挫折的任務結束後，立即運行：
 
@@ -34,7 +50,7 @@
 
 ---
 
-## 3. 開發聚焦的專屬技能 (Authoring a Skill)
+## 4. 開發聚焦的專屬技能 (Authoring a Skill)
 
 當專案需要固化特定業務流程時：
 
@@ -45,11 +61,11 @@
 這會匹配 [編寫或修改技能劇本 (Authoring a skill)](../../.agents/skills/poteto-mode/playbooks/authoring-a-skill.md)。面向 Agent 的說明文件標準遠高於普通說明，劇本會自動校驗 YAML frontmatter、路徑連結完整性與反模式檢測。
 
 > [!NOTE]
-> 若該技能涉及啟動、驅動與檢驗本機應用，請優先使用專門的 [`create-verification-skill`](../../.agents/skills/create-verification-skill/SKILL.md)。
+> 若該技能涉及啟動、驅動與檢驗本機應用，請優先使用專門的 [`create-verification-skill`](../../.agents/skills/create-verification-skill/SKILL.md)；若涉及並發競態或狀態機不變量的數學證明，請使用 [`create-formal-verification-skill`](../../.agents/skills/create-formal-verification-skill/SKILL.md)。
 
 ---
 
-## 4. 遵守專業技術寫作規範：`/technical-writing`
+## 5. 遵守專業技術寫作規範：`/technical-writing`
 
 對於文件中包含的 RFC、說明文檔或 PR 描述，調用 [`technical-writing`](../../.agents/skills/technical-writing/SKILL.md)：
 
@@ -61,7 +77,7 @@
 
 ---
 
-## 5. 雙盲測試技能變更 (Eval Playbook)
+## 6. 雙盲測試技能變更 (Eval Playbook)
 
 技能檔案的改動會影響未來的每一次會話，因此必須如同科學實驗般進行驗證：
 
