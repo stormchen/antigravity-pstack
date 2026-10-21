@@ -22,10 +22,10 @@
   ```
 - **效能修復 (Perf issue)**：陳述具體測量數據，拒絕憑感覺優化。
   ```text
-  /poteto-mode 在此 fixture 下啟動耗時 1.8 秒。進行效能剖析（trace），修復測量出的瓶頸，出示優化前後對比。
+  /poteto-mode 在此 fixture 下啟動耗時 1.8 秒。進行效能剖析（trace），修復測量出的瓶頸，並依 benchmark-checklist 出示優化前後對比。
   ```
 
-劇本會自動補足你沒打出來的關鍵防線：修復前必先重現、實作前鎖定資料結構、重構前固化行為特徵、優化前測量瓶頸。
+劇本會自動補足你沒打出來的關鍵防線：修復前必先重現、實作前鎖定資料結構、重構前固化行為特徵、優化前測量瓶頸並依序套用 7 大效能口訣。
 
 ---
 
@@ -37,16 +37,16 @@
 /tdd implement
 ```
 
-[`tdd`](../../.agents/skills/tdd/SKILL.md) 會撰寫因預期原因而失敗的最小測試案例，完成修復，然後重新跑通測試。若編寫測試需要龐大的 Mock 或脆弱的外部環境，它會誠實說明並改採最接近真實執行的檢驗指令——絕不在真實指令更具說服力時強行偽造 Mock。
+[`tdd`](../../.agents/skills/tdd/SKILL.md) 會撰寫因預期原因而失敗的最小測試案例，完成修復，然後重新跑通測試（嚴格遵循 **Test Behavior, Not Implementation** 原則）。若編寫測試需要龐大的 Mock 或脆弱的外部環境，它會誠實說明並改採最接近真實執行的檢驗指令——絕不在真實指令更具說服力時強行偽造 Mock。
 
 ---
 
 ## 3. TypeScript 規範自動載入
 
-[`typescript-best-practices`](../../.agents/skills/typescript-best-practices/SKILL.md) 在你的日常操作中不需要手動輸入指令。當 Agent 讀寫任何 `.ts` 或 `.tsx` 檔案時，該技能會自動啟動，落實核心型別原則：
-- 邊界嚴格檢驗（輸入強制使用 `unknown` 與 Schema 解析）。
-- 內部純粹強型別，善用辨識聯集（Discriminated Unions）消除非法狀態。
-- 拒絕 `any` 與無意義的型別斷言。
+[`typescript-best-practices`](../../.agents/skills/typescript-best-practices/SKILL.md) 在你的日常操作中不需要手動輸入指令。當 Agent 讀寫任何 `.ts` 或 `.tsx` 檔案時，該技能會落實核心型別原則：
+- 邊界嚴格檢驗（輸入強制使用 `unknown` 與執行期 Schema 解析）。
+- 內部純粹強型別，善用辨識聯集（Discriminated Unions）與建構式建模（Constructive Modeling，如 `NonEmpty<T> = [T, ...T[]]`）消除非法狀態。
+- Brand 型別強制透過驗證型別守衛（`input is AgentId`）產生，嚴禁使用 `as` 斷言。
 
 ---
 
@@ -55,7 +55,7 @@
 未經清理的代碼與說明會大幅增加 Code Review 的認知負擔。專案提供兩個專用工具：
 
 ### 清除文字贅詞：`/unslop`
-PR 描述、Commit 訊息與文件說明容易充斥 AI 常見的空話與套話。使用 [`unslop`](../../.agents/skills/unslop/SKILL.md) 進行精煉：
+PR 描述、Commit 訊息與文件說明容易充斥 AI 常見的空話、矯揉造作的比喻與過度壓縮的符號句。使用 [`unslop`](../../.agents/skills/unslop/SKILL.md) 進行精煉：
 
 ```text
 /unslop 整理這次的 README 修改，去除贅字，語氣精確客觀。
@@ -75,4 +75,4 @@ PR 描述、Commit 訊息與文件說明容易充斥 AI 常見的空話與套話
 
 ---
 
-下一章：[實機驗證與交付流程](./06-verify-and-ship.md)
+下一章：[實機驗證、形式驗證與交付流程](./06-verify-and-ship.md)

@@ -1,6 +1,6 @@
 # 透過 `/poteto-mode` 路由任務
 
-`/poteto-mode` 是整個體系的大門。你交給它一個目標，它會自動匹配 22 套內建 Playbooks（劇本）之一，將該劇本的標準步驟展開至任務清單，並在各階段調用相應技能。在本章中，你將學會如何寫出高效率的 Prompt，以及為什麼你其實不需要長篇大論。
+`/poteto-mode` 是整個體系的大門。你交給它一個目標，它會自動匹配 23 套內建 Playbooks（劇本）之一，將該劇本的標準步驟展開至任務清單，並在各階段調用相應技能。在本章中，你將學會如何寫出高效率的 Prompt，以及為什麼你其實不需要長篇大論。
 
 ![調度員在信號調度板下操作轉轍器，引導機器人沿軌道駛向不同任務閘門。](./images/router.jpg)
 
@@ -27,7 +27,7 @@ flowchart TD
     J --> K
 ```
 
-上圖展示了常見的路由路線。除此之外，專案還內建了指標爬坡 (hillclimb)、執行期追蹤 (diagnose-trace)、原型驗證 (prototype)、畫面像素對齊 (visual-parity)、技能開發與評估 (authoring/eval)、PR 監護 (babysit)、多階段遷移編排 (orchestrate) 等共 22 個劇本（完整清單可查閱 [Playbooks 目錄](../../.agents/skills/poteto-mode/playbooks/)）。
+上圖展示了常見的路由路線。除此之外，專案還內建了指標爬坡 (hillclimb)、執行期追蹤 (trace-forensics)、原型驗證 (prototype)、畫面像素對齊 (visual-parity)、技能開發與評估 (authoring/eval)、開啟 PR (opening-a-pr)、PR 監護 (babysit)、多階段遷移編排 (orchestrate) 等共 23 個劇本（完整清單可查閱 [Playbooks 目錄](../../.agents/skills/poteto-mode/playbooks/)）。
 
 ---
 
@@ -93,7 +93,7 @@ flowchart TD
 /poteto-mode 我要離開了。持續推進直到遷移檢查回報 0 個舊呼叫點。記錄你的所有決策。
 ```
 
-需要事後審查的工作會自動路由至 [`figure-it-out`](../../.agents/skills/figure-it-out/SKILL.md)，它會規劃執行階段並啟用 [`show-me-your-work`](../../.agents/skills/show-me-your-work/SKILL.md) 紀錄決策日誌。
+需要事後審查的工作會自動路由至 [`figure-it-out`](../../.agents/skills/figure-it-out/SKILL.md)，它會規劃執行階段並啟用 [`show-me-your-work`](../../.agents/skills/show-me-your-work/SKILL.md) 紀錄決策日誌。等你回來時，只需輸入 `/ketchup` 即可快速掌握進展與待決策事項。
 
 > [!WARNING]
 > **常見誤區**：不要在 Prompt 中手動排列 Skill 序列（例如「先用 /how，再用 /architect，然後 /arena...」）。Playbook 已經針對各情境設計了最佳步驟，手寫指令往往會破壞劇本設定的防護網。

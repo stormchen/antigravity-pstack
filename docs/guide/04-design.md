@@ -6,13 +6,15 @@
 
 ---
 
-## 1. 透過 `/architect` 鎖定架構介面
+## 1. 透過 `/architect` 鎖定防禦性架構介面
 
 ```text
 /architect 在編寫代碼前先設計匯入管線（import pipeline）。我最在乎呼叫端的使用體驗。
 ```
 
 [`architect`](../../.agents/skills/architect/SKILL.md) 調度專案自訂的 [`code-architect`](../../.agents/agents/code-architect.md) 角色。它會先透過 `/how` 掌握既有代碼架構，再透過 `/why` 理解模組歸屬動機，接著調用 `/arena` 產生競爭性的型別草圖、函式簽名與模組關係圖。
+
+在篩選架構候選時，`/architect` 會嚴格對照 [`design-red-flags.md`](../../.agents/skills/architect/references/design-red-flags.md) 排除八大架構紅旗（淺層模組、資訊洩漏、時間解耦不良、穿透式方法、所有權分裂、同一任務多種做法、內部細節可被外部匯入、手動同步清單），並假設**下一位維護者是只看當前開啟檔案、直接複製最近範例的 AI Agent**，優先選擇「從單一檔案看起來正確的寫法，在整個儲存庫中也必然正確」的深層介面設計。
 
 預設情況下它會在設計綜合後直接推進實作。如果你希望在編寫代碼前親自確認設計，可以加上檢查點：
 

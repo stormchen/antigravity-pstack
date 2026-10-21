@@ -11,16 +11,18 @@ Antigravity 具備自動化的工作區發現機制（Workspace Discovery）。�
 ```text
 目標專案根目錄/
 ├── .agents/
-│   ├── skills/                  # 22 個核心工作流技能（隨選載入）
+│   ├── skills/                  # 29 個核心工作流技能（隨選載入）
 │   │   ├── architect/
 │   │   ├── arena/
+│   │   ├── ketchup/
 │   │   ├── poteto-mode/
+│   │   ├── sharpen/
 │   │   ├── tdd/
 │   │   └── ...
 │   ├── agents/                  # 自訂 Subagents 角色定義
 │   │   ├── code-adversary.md    # 紅隊審查員與極端邊界獵人
 │   │   └── code-architect.md    # 系統架構與介面設計師
-│   └── rules/                   # 核心工程守則
+│   └── rules/                   # 24 項核心工程守則
 │       └── engineering-principles.md
 └── AGENTS.md                    # 專案規範與守則入口（自動載入）
 ```
@@ -40,15 +42,27 @@ Antigravity 具備自動化的工作區發現機制（Workspace Discovery）。�
 
 ---
 
-## 3. 生成專屬的應用驗證技能
+## 3. 生成專屬的應用驗證與形式驗證技能
 
-在首次運行大型任務前，建議檢查專案是否具備客觀驗證應用行為的方式。若專案缺乏自動化驗證機制，可直接執行：
+在首次運行大型任務前，建議為專案建立自動化驗證防線：
+
+### A. 端到端實機驗證技能
+若專案缺乏自動化驅動與驗證應用行為的方式，直接執行：
 
 ```text
 /create-verification-skill
 ```
 
-[`create-verification-skill`](../../.agents/skills/create-verification-skill/SKILL.md) 會主動探索專案的啟動方式、本機服務驅動介面（如 HTTP、CLI、PTY 或瀏覽器）與結果檢驗標準，並在 `.agents/skills/verify-<app>/` 生成專屬驗證技能與功能地圖（Feature Map）。
+[`create-verification-skill`](../../.agents/skills/create-verification-skill/SKILL.md) 會主動探索專案的啟動方式（確保從空白目錄達實際可操作狀態 Usable）、本機服務驅動介面（如 HTTP、CLI、PTY 或瀏覽器）與結果檢驗標準，並在 `.agents/skills/verify-<app>/` 生成專屬驗證技能與功能地圖（Feature Map）。
+
+### B. 關鍵邏輯的形式驗證技能 (Formal Verification)
+若專案包含並發競態、重試機制、複雜狀態機或高代價資料不變量，可執行：
+
+```text
+/create-formal-verification-skill
+```
+
+[`create-formal-verification-skill`](../../.agents/skills/create-formal-verification-skill/SKILL.md) 會鎖定出錯代價最高的核心區域，選配 TLA+、SMT 驗證器或屬性測試工具建立數學級窮舉檢查，留下一鍵可重跑的形式驗證技能。
 
 ---
 
