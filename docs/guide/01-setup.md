@@ -11,12 +11,13 @@ Antigravity 具備自動化的工作區發現機制（Workspace Discovery）。�
 ```text
 目標專案根目錄/
 ├── .agents/
-│   ├── skills/                  # 29 個核心工作流技能（隨選載入）
+│   ├── skills/                  # 31 個核心工作流技能（隨選載入）
 │   │   ├── architect/
 │   │   ├── arena/
 │   │   ├── ketchup/
 │   │   ├── poteto-mode/
 │   │   ├── sharpen/
+│   │   ├── statechart/
 │   │   ├── tdd/
 │   │   └── ...
 │   ├── agents/                  # 自訂 Subagents 角色定義

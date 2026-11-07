@@ -1,96 +1,42 @@
 ---
 name: interrogate
-description: "對抗性審查與多角度代碼審查。調度 code-adversary 與多個獨立視角 Subagent 挑戰代碼變更，尋找盲點、邊界漏洞與過度設計，最終由 Main Agent 收斂為結構化裁決。"
+description: "對抗性審查與實機擊穿驗證。調度 code-adversary 與多個獨立視角 Subagent 嘗試以真實執行（失敗測試、重現腳本或錯誤命令輸出）擊穿代碼變更或設計，僅保留經實機執行證明的缺陷。"
 ---
 
-# Interrogate (對抗性審查)
+# Interrogate (對抗性審查與實機擊穿驗證)
 
-利用 Antigravity 原生 Subagent 機制，調度 `code-adversary` 與多個不同視角的審查 Subagent，對代碼變更進行對抗性審查。每個 Subagent 依據相同的審查標準與 prompt 獨立尋找漏洞與盲點。多個 Subagent 達成共識的問題屬於高信心訊號；單一 Subagent 提出的問題作為重要參考。
+調度 `code-adversary` 與多個獨立視角的審查 Subagent（Adversaries）嘗試擊穿代碼變更或設計。**唯有經實際執行證明的問題才算數（A finding survives only when a run proves it）**。Main Agent 負責重跑驗證並回報結果，請勿自動套用修復。
 
-最終成果是由 Main Agent 彙整的結構化裁決 (Synthesized Verdict)。請勿直接自動套用修改。
+## 1. 界定範圍與意圖 (Frame)
 
-## Step 1: 確定審查範圍 (Determine Scope)
+- **審查範圍 (Scope)**：若使用者指定了特定檔案、目錄或設計，直接以此為範圍；否則預設取當前分支相對於基底分支（如 `main`）直至工作區（working tree）的完整變更。
+- **陳述意圖 (Intent)**：依據 **in-your-own-words** 技能，從使用者的指令、Commit 訊息與 PR 描述中提煉並以一段話明確陳述變更意圖。若意圖不明確，先向使用者確認。
 
-從上下文確認要審查的範圍：
-- 如果使用者指定了特定檔案或 diff，直接採用。
-- 如果在 feature 分支上，執行 `git diff main...HEAD`（或相應的 base branch）獲取完整變更。
-- 如果使用者提及近期的工作，收集相關檔案。
+## 2. 平行派發紅隊擊穿 (Fan out)
 
-將 diff（或檔案內容）連同必要的周邊上下文一併打包提供給審查 Subagent。
+依循 **arena** 技能的平行派發與工作區隔離原則（例如透過 `invoke_subagent` 搭配 `Workspace: "branch"` 或獨立暫存目錄，並確保包含工作區未提交的變更），同時調度多個對抗性審查 Subagent（如 `code-adversary`、`code-architect` 或獨立 `self` 角色）。提供給每位審查員相同的審查範圍、變更意圖與以下任務簡報：
 
-## Step 2: 明確陳述意圖 (State the Intent)
+> **擊穿這項變更（Break this change）。**
+> 每一項發現都必須透過針對真實代碼的實際執行來證明——例如一個失敗的測試案例、一段重現腳本（repro script）、或能印出錯誤行為的命令輸出。若是針對設計或計劃的審查，請執行原型草圖（prototype）或直接探測當前代碼樹。
+> 將重現腳本保留在你專屬的工作區內。回報每項發現時，必須包含：
+> 1. 問題標題
+> 2. 精確的執行指令（exact command）
+> 3. 實際印出的輸出（actual output）
+> 4. 根據變更意圖應有的正確輸出（expected output per intent）
+>
+> **凡是你沒有親手執行驗證過的內容，一律不得列入報告**——這包括程式碼風格、命名、結構偏好，以及「需要未來某個假設性改動才會觸發」的理論風險。「零發現（No findings）」是完全合格且有效的結果。
 
-在派發 Subagent 之前，先明確寫下一段話陳述代碼意圖：這段代碼試圖達成什麼目標？從以下來源提煉：
-- 使用者的指令
-- Commit 訊息與 PR 描述
-- 代碼本身的架構與註解
+## 3. 主代理實機複驗 (Verify)
 
-審查員的職責是挑戰「實現方式是否精準且穩健地達成了意圖」，而非挑戰意圖本身。若對意圖有疑問，先與使用者確認。
+Main Agent 收到各審查員的回報後，依循 **arena** Phase F（與 **prove-it-works** 原則）親自重跑每一項發現所附帶的指令：
+- **保留條件**：唯有當重跑指令確實印出失敗結果，且該失敗確實違反了變更意圖時，才予以保留。
+- **剔除與合併**：其餘未經證明或無法重現的項目一律剔除（Drop）。若不同審查員提出的問題共享同一個根本原因（Root cause），將其合併為單一發現並標註所有發現它的審查員。
+- 跳過 Arena 的交叉評審、挑選基底與嫁接階段——不同審查員會擊穿不同的弱點，因此最終報告保留所有通過實機複驗的發現。
 
-## Step 3: 調度審查 Subagent (Spawn Reviewers)
+## 4. 輸出格式 (Output)
 
-Main Agent 呼叫 `invoke_subagent` 工具，同時派發多個審查角色：
+以繁體中文輸出精煉的結構化裁決報告：
 
-1. **核心紅隊審查員 (`code-adversary`)**：
-   - 角色：紅隊審查員與極端邊界獵人。
-   - 職責：落實 Subtract Before You Add 與 Laziness Protocol，專注於找出 Race Conditions、記憶體洩漏、邊界未處理錯誤與不必要的新抽象。
-2. **輔助架構審查員 (`code-architect` 或通用審查員)**：
-   - 角色：系統架構與介面設計師。
-   - 職責：檢查 Interface/API 契約、模組邊界、型別安全與依賴最小化。
-3. **延伸審查視角 (`research` 或獨立視角 subagent)**：
-   - 從不同角度（如可測試性、性能、可維護性）獨立檢視。
-
-### 派發 Prompt 構建
-填寫 `references/reviewer-prompt.md` 模板，包含：
-1. Step 2 所陳述的代碼意圖
-2. 代碼 Diff 或完整檔案內容
-3. `references/rubric.md` 內的審查標準
-4. `references/code-quality-review.md` 內的代碼品質視角
-
-每個 Subagent 產出結構化的審查報告。
-
-## Step 4: 整合與收斂 (Synthesize)
-
-各 Subagent 完成回報後，Main Agent 進行整合：
-1. **解析所有回報**：提取各 Subagent 提出的發現。
-2. **識別共識 (Consensus)**：被多個 Subagent 獨立提出的問題具備最高信心度。
-3. **識別單一意見 (Lone findings)**：仍值得檢視，但依上下文謹慎評估。
-4. **去重與合併 (Deduplicate)**：將不同 Subagent 用不同詞彙描述的相同問題進行合併，標註提出的角色。
-5. **記錄分歧 (Disagreements)**：若不同 Subagent 對同一設計持相反觀點，納入裁決考量。
-
-## Step 5: 主導裁決 (Lead Judgment)
-
-Main Agent 作為 Pragmatic Senior Engineer 擔任主審，具備全域上下文（目標、限制、時間表、已知的 Tradeoffs）。
-
-依據 `references/lead-judgment.md` 框架將所有問題分類至四個區間：
-- **Act on (必須處理)**：實質影響正確性、安全性或可維護性的重大問題，會阻擋 PR 合併。
-- **Consider (值得考慮)**：合理的建議，但需評估改善效益是否大於目前投入成本。
-- **Noted (記錄參考)**：技術上成立但當前不可行或優先級低（如過早最佳化）。
-- **Dismissed (駁回/忽略)**：誤報、缺乏全域上下文或過於吹毛求疵，附上簡短駁回理由。
-
-## 輸出格式 (Output Format)
-
-以繁體中文呈現象徵裁決的結構化報告：
-
-### 意圖說明 (Intent)
-> [Step 2 陳述的意圖段落]
-
-### 審查員參與清單 (Reviewers)
-- Reviewer `code-adversary`: [發現數量] 項問題
-- Reviewer `code-architect`: [發現數量] 項問題
-- 其他視角 Reviewer: [發現數量] 項問題
-
-### 必須處理 (Act On)
-- [問題描述、提出之 Subagent、為何必須修正]
-
-### 值得考慮 (Consider)
-- [問題描述、提出之 Subagent、涉及的權衡]
-
-### 記錄參考 (Noted)
-- [有效但低優先級之觀察項目]
-
-### 駁回項目 (Dismissed)
-- [被過濾或駁回之項目與具體理由]
-
-### 共識與分歧分析 (Agreement Map)
-- [各 Subagent 在何處達成共識，在何處產生分歧，以及此分歧對架構的啟示]
+- **意圖說明 (Intent)**：第 1 步重述的核心意圖。
+- **實機證實之缺陷 (Findings)**：針對每一項通過複驗的發現，列出：執行指令、實際輸出、為何違反意圖、以及發現該問題的審查員。若無任何項目通過複驗，明確寫出「無經實機證實之缺陷（No verified findings）」。
+- **已剔除項目統計 (Dropped)**：列出每位審查員被剔除的發現數量與剔除原因（如：未附執行證明、重跑未重現、屬於主觀風格偏好或非本變更意圖範疇）。

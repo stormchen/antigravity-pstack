@@ -1,7 +1,7 @@
 # pstack for Antigravity
 
 > **追求深度而非虛浮產能，以真機驗證驅動工程品質。**  
-> 本專案已完全移植並重構為 **Google DeepMind Antigravity 原生架構**，支援跨平台（Windows / macOS / Linux）開箱即用，並同步整合 upstream 最新 v0.15.28 改進成果。
+> 本專案已完全移植並重構為 **Google DeepMind Antigravity 原生架構**，支援跨平台（Windows / macOS / Linux）開箱即用，並同步整合 upstream 最新 v0.15.36 改進成果。
 
 ---
 
@@ -33,7 +33,7 @@ pstack 的核心理念：
 ```text
 專案根目錄/
 ├── .agents/
-│   ├── skills/                  # 29 個核心工作流技能
+│   ├── skills/                  # 31 個核心工作流技能
 │   ├── agents/                  # 自訂 Subagents（code-adversary, code-architect）
 │   └── rules/                   # 24 項核心工程守則（engineering-principles.md）
 ├── docs/guide/                  # 完整繁體中文實戰指南（含圖解）
@@ -93,9 +93,9 @@ pstack 的核心理念：
 | [PR 監護 (Babysit)](./.agents/skills/poteto-mode/playbooks/babysit.md) | 推進 PR 至 Merge-ready：批次解衝突、澄清與修復 Review 意見、跑通 CI。 |
 | [堆疊交付 (Shipping)](./.agents/skills/poteto-mode/playbooks/shipping.md) | 獨立驗證綠燈堆疊，自底向上逐步合併至主幹。 |
 | [自主運行 (Autonomous run)](./.agents/skills/poteto-mode/playbooks/autonomous-run.md) | 離席長時運作，具備明確完成條件與逃生脫退機制。 |
-| [大型編排 (Orchestrate)](./.agents/skills/poteto-mode/playbooks/orchestrate.md) | 跨日、多層次的大型專案編排，調度子代理艦隊協同。 |
+| [大型編排 (Orchestrate)](./.agents/skills/poteto-mode/playbooks/orchestrate.md) | 跨日、多層次的大型專案編排：主協調者純 Agentic 決定分工並審查各子代理產物，絕不親自寫碼。 |
 | [全自主飛行 (Autopilot-full)](./.agents/skills/poteto-mode/playbooks/autopilot-full.md) | 自主推進獨立 PR 佇列至合併，嚴格由獨立驗證 Agent 簽核並以 `/ketchup` 同步。 |
-| [堆疊飛行 (Autopilot-stack)](./.agents/skills/poteto-mode/playbooks/autopilot-stack.md) | 推進多項變更並整理為線性堆疊，留待早晨人工審閱後合併。 |
+| [不合併自主飛行 (Autopilot-stack)](./.agents/skills/poteto-mode/playbooks/autopilot-stack.md) | 不自動合併的 Autopilot-full：建構並驗證各 PR 留待人工審閱合併，僅在 PR 有實質建構依賴時才堆疊。 |
 | [會話接續 (Session pickup)](./.agents/skills/poteto-mode/playbooks/session-pickup.md) | 接手先前 Agent 留下的工作，依循決策日誌繼續，不重做已完成事項。 |
 | [安全暫停 (Pause safely)](./.agents/skills/poteto-mode/playbooks/pause-safely.md) | 妥善封存目前狀態與復工點，便於日後無縫復原。 |
 | [多階段計劃 (Multi-phase plan)](./.agents/skills/poteto-mode/playbooks/multi-phase-plan.md) | 跨越多個階段或 PR 堆疊的結構化工作計劃。 |
@@ -107,14 +107,15 @@ pstack 的核心理念：
 
 ## 核心技能庫 (Skills)
 
-本專案經過深度審查與清理，去除了無效與平台綁定模組，保留並最佳化了 **29 個核心技能**：
+本專案經過深度審查與清理，去除了無效與平台綁定模組，保留並最佳化了 **31 個核心技能**：
 
 | 技能名稱 | 核心職責 | 調用範例 |
 |---|---|---|
 | [`poteto-mode`](./.agents/skills/poteto-mode/SKILL.md) | 核心總調度大腦，自動匹配劇本並編排執行 | `/poteto-mode <目標與驗證標準>` |
-| [`sharpen`](./.agents/skills/sharpen/SKILL.md) | 需求深度打磨：從專家視角、第一手素材與客觀檢驗條件重寫提示詞 | `/sharpen <原始提示詞>` |
+| [`sharpen`](./.agents/skills/sharpen/SKILL.md) | 提示詞深度打磨：從專家視角、第一手素材、方法工具與客觀檢驗條件重寫提示詞並交還給你（不直接執行任務） | `/sharpen <準備發送的提示詞>` |
 | [`in-your-own-words`](./.agents/skills/in-your-own-words/SKILL.md) | 在動手前以 Agent 自己的話複述核心目標與底層問題，確保共識對齊 | `/in-your-own-words` |
 | [`ketchup`](./.agents/skills/ketchup/SKILL.md) | 離席進度與決策同步看板：以白話、視覺圖表與待決策清單快速同步進展 | `/ketchup` |
+| [`ketchup-video`](./.agents/skills/ketchup-video/SKILL.md) | 離席進度短片同步：以帶字幕的幻燈片短片呈現進展，並在下方列出待決策事項 | `/ketchup-video` |
 | [`correct`](./.agents/skills/correct/SKILL.md) | 結構化糾偏：依序從架構、型別、Linter 到測試，根除重複犯下的錯誤 | `/correct` |
 | [`how`](./.agents/skills/how/SKILL.md) | 深入梳理現有代碼執行期流程與關鍵型別，支援架構批判 | `/how 這套快取機制如何運作？` |
 | [`why`](./.agents/skills/why/SKILL.md) | 像偵探一樣挖掘 Git 歷史與 Issue，探尋架構背後的原因 | `/why 當初為何設定 5 秒超時？` |
@@ -123,7 +124,7 @@ pstack 的核心理念：
 | [`architect`](./.agents/skills/architect/SKILL.md) | 調度架構師子代理設計型別與邊界契約，防範過早寫碼與後續 Agent 誤用 | `/architect 在動手前先設計匯入介面` |
 | [`arena`](./.agents/skills/arena/SKILL.md) | 多方案平行競技場，多個 Agent 獨立實現並交叉打分嫁接 | `/arena 對這段資料結構設計進行競技` |
 | [`swarm`](./.agents/skills/swarm/SKILL.md) | 大規模平行派發矩陣工作者，適用於套件覆蓋或賽馬測試 | `/swarm 獨立檢查 packages/ 下所有套件` |
-| [`interrogate`](./.agents/skills/interrogate/SKILL.md) | 調度紅隊審查員對變更進行嚴苛挑刺，區分有效漏洞與噪音 | `/interrogate 審查分支，尋找邊界漏洞` |
+| [`interrogate`](./.agents/skills/interrogate/SKILL.md) | 對抗性審查與實機擊穿：調度紅隊審查員以實際執行擊穿變更，僅保留經實機證明的缺陷 | `/interrogate 審查分支，尋找邊界漏洞` |
 | [`tdd`](./.agents/skills/tdd/SKILL.md) | 測試驅動開發：編寫最小失敗測試 -> 修復 -> 重新跑通 | `/tdd implement` |
 | [`blast-radius`](./.agents/skills/blast-radius/SKILL.md) | 評估小改動的潛在爆炸半徑，並用真實代碼證明安全 | `/blast-radius 評估此改動的連帶影響` |
 | [`benchmark-checklist`](./.agents/skills/benchmark-checklist/SKILL.md) | 效能基準測試 7 大檢驗清單：驗證限制因子、調優對等性與可重現性 | `/benchmark-checklist` |
@@ -131,6 +132,7 @@ pstack 的核心理念：
 | [`maintain-verification-skill`](./.agents/skills/maintain-verification-skill/SKILL.md) | 定期審查功能地圖漂移，回報應用回歸缺陷並修復驗證腳本 | `/maintain-verification-skill` |
 | [`create-formal-verification-skill`](./.agents/skills/create-formal-verification-skill/SKILL.md) | 針對並發競態、重試與狀態機，生成 TLA+ / SMT / 屬性形式驗證技能 | `/create-formal-verification-skill` |
 | [`maintain-formal-verification-skill`](./.agents/skills/maintain-formal-verification-skill/SKILL.md) | 將形式驗證模型與最新代碼重新對齊，區分模型漂移與真實代碼 Bug | `/maintain-formal-verification-skill` |
+| [`statechart`](./.agents/skills/statechart/SKILL.md) | TLA+ 狀態圖視覺化：將模型檢查結果繪製為使用者視角的 Mermaid 狀態圖與最短反例路徑 | `/statechart 使用者離線編輯筆記時所見狀態` |
 | [`unslop`](./.agents/skills/unslop/SKILL.md) | 去除 PR 描述、Commit 與文件中的 AI 贅字、矯揉文風與過度壓縮 | `/unslop 整理這次的更新說明` |
 | [`no-comments`](./.agents/skills/no-comments/SKILL.md) | 派發獨立視角清除代碼中的多餘廢話註解，轉化為型別約束 | `/no-comments 淨化此 diff 的註解` |
 | [`technical-writing`](./.agents/skills/technical-writing/SKILL.md) | 遵循 Diátaxis 架構與 Google 開發者規範的嚴格技術寫作 | `/technical-writing 審查設計文件` |
@@ -175,6 +177,7 @@ pstack 的核心理念：
 本專案已徹底解除對 Linux/macOS Shell 的硬性綁定：
 - **決策記錄器**：提供 `log.mjs` 與 `log.ps1`，相容 Windows PowerShell 與 Node.js。
 - **PR 監護**：提供 `watch-pr.cmd` 與跨平台 TypeScript `bootstrap.ts`，原生支援 Windows 命令列環境。
+- **TLA+ 狀態圖編譯器**：提供 `statechart.cmd` 與跨平台進程管理，支援在 Windows / macOS / Linux 將 TLA+ 模型檢查轉為 Mermaid 狀態圖。
 - **Worktree 審計**：全面採用 Node.js 跨平台腳本 `worktree-audit.mjs` 執行空間檢驗。
 
 ---

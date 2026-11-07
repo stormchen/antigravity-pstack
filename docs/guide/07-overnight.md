@@ -60,6 +60,7 @@ flowchart TD
 [`ketchup`](../../.agents/skills/ketchup/SKILL.md)（諧音 Catch-up）會：
 - 以大白話（100 字內）結合**視覺圖表（截圖、錄影、Mermaid 架構圖）**呈現對使用者有實質意義的進展。
 - **完整列出所有待決策事項（Action Items）**：每項附上影響、風險、證據以及 **Agent 的建議選項（Your Pick）**，讓你在回覆中一眼就能直接拍板定案。
+- 若你偏好以短片形式觀看進展，可輸入 [`/ketchup-video`](../../.agents/skills/ketchup-video/SKILL.md)：它會將期間發生的進展渲染為一段帶字幕與轉場的橫向幻燈片短片，並在影片正下方列出待決策事項。
 
 ### B. 深度決策軌跡審計：`/show-me-your-work`
 
@@ -78,8 +79,8 @@ flowchart TD
 ## 4. 更大規模的夜間協同：佇列與編排
 
 - **[Autopilot-full 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-full.md)**：自動推進佇列中的獨立 PR 直至合併。每一筆 PR 都有專屬負責 Agent，由獨立驗證 Swarm 簽核後合併，並在每個巡檢週期以 `/ketchup` 向你同步。
-- **[Autopilot-stack 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-stack.md)**：同樣自動推進各項任務，但維持線性堆疊而不擅自合併，留待你早晨透過 `/ketchup` 審閱後一次 Land。
-- **[Orchestrate 劇本](../../.agents/skills/poteto-mode/playbooks/orchestrate.md)**：適用於跨越多天的超大型專案。由不編寫任何代碼的協調主代理統一排定子任務簡報，並調度龐大的 Subagent 艦隊分頭攻堅。
+- **[Autopilot-stack 劇本](../../.agents/skills/poteto-mode/playbooks/autopilot-stack.md)**：不執行合併的 Autopilot-full。同樣自動建構並驗證各項 PR，但僅在 PR 之間有實質建構依賴時才堆疊，留待你早晨審閱各 PR 的驗證結論後親自合併。
+- **[Orchestrate 劇本](../../.agents/skills/poteto-mode/playbooks/orchestrate.md)**：適用於跨越多天的超大型專案。由不編寫任何代碼的協調主代理以純 Agentic 方式決定各子任務分工、親自審查各 Subagent 產物與 Diff，並調度子代理艦隊分頭攻堅。
 
 > [!CAUTION]
 > **絕對避坑**：時間長度絕不能當作完成條件！「幫我做 4 個小時」只會讓 Agent 為了消耗時間而產出無效操作。務必給予一個**非真即假（True or False）**的客觀檢驗指令。

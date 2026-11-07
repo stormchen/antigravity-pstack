@@ -40,6 +40,7 @@ description: "為專案生成專屬的形式驗證技能 (Formal Verification Sk
 3. 區分「真實代碼 Bug」與「模型建構誤差」。
 4. 在業務邏輯蓄意變更時，正確更新驗證模型。
 5. 將涵蓋範圍與 Sync Commit 寫入技能檔，並規定唯有在確認模型完全反映新版代碼後，才能推進 Sync Commit。全部使用真實指令、真實路徑與專案名詞，不留任何占位符（Placeholders）。
+6. **若檢查採用 TLA+ 模型，指引搭配 `/statechart` 解讀結果**：在生成的技能中告訴下一個 Agent 使用 [`/statechart`](../statechart/SKILL.md) 技能來讀取每次模型檢查結果。當不變量（Invariant）被違反時，`/statechart` 會以白話呈現最短反例路徑；當檢查通過時，它會繪製系統在各狀態間轉換的 Mermaid 狀態圖。請僅以技能名稱 `/statechart` 引用，切勿將其內部命令參數或路徑硬編碼複製進生成的技能或腳本中。
 
 ## 5. 交付前實機反證 (Prove it before you hand off)
 

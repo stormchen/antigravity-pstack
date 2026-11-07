@@ -59,7 +59,7 @@
 - **Prove It Works**：以真實產物的客觀運行結果為準，拒絕以「能編譯」作為驗證。
 - **Fix Root Causes**：動手前必先重現並追查根因，拒絕症狀補丁；深度挖掘後主動提議低成本常駐防護訊號。
 - **Attack the Premise**：當兩個以上基於相同前提的修復接連失敗時，先寫下並直接測試該前提假設本身。
-- **Explain the Number**：採信數據前先追問「為什麼不是兩倍好？」，指認限制因子並排除假性加速。
+- **Explain the Number**：開跑測量前先寫下「改變決策的目標結果」與「雜訊底線（Noise floor）」；採信數據前追問「為什麼不是兩倍好？」，指認限制因子並排除假性加速。
 - **Test Behavior, Not Implementation**：只斷言呼叫方或使用者可觀察的外部行為，確保內部重構不弄壞測試、外部行為破壞必被捕獲。
 - **Sequence Work into Verifiable Units**：將大任務拆解為獨立可驗證的小單元，步步為營。
 

@@ -75,6 +75,16 @@
 3. 驗證模型在刻意破壞的代碼變體上**確實會報錯並給出反例（Able to fail）**。
 4. 留下記錄涵蓋檔案與 Sync Commit 的專案驗證技能。日後當受保護代碼經過多次修改，只需執行 [`/maintain-formal-verification-skill`](../../.agents/skills/maintain-formal-verification-skill/SKILL.md)，即可將模型與最新代碼重新對齊，並嚴格區分「模型漂移」與「真實代碼 Bug」。
 
+### 將系統行為視覺化為狀態圖 (`/statechart`)
+
+形式模型的反例能說服工程師，但負責產品行為的 PM 或設計師需要用他們的語言看見問題。此時可執行：
+
+```text
+/statechart 使用者在離線狀態下編輯筆記時所看到的畫面與狀態變化
+```
+
+[`/statechart`](../../.agents/skills/statechart/SKILL.md) 會從經 TLC 檢驗的 TLA+ 模型直接產生使用者視角的 **Mermaid 狀態圖 (`stateDiagram-v2`)**，確保圖表與受檢模型永遠一致。閱讀者的規則（例如「離線時絕不應該顯示已同步」）會轉化為 Invariants；狀態圖會直接標出違反規則的狀態（`breaks` / `mayBreak`），並在報告中以白話列出最短觸發路徑。在交付前，Agent 還會在真實代碼上逐步重放（Replay）每條 Bug 路徑，防止把模型誤差當成產品 Bug 回報。
+
 ---
 
 ## 5. 建立清晰的 PR (Opening a PR)
